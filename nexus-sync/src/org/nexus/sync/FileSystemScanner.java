@@ -26,8 +26,8 @@ public class FileSystemScanner implements Scanner {
 			.compile("^ivy-(\\S*)\\.xml$");
 
 	final File rootDir;
-	final Deque<File> deque = new ArrayDeque<File>();
-	final Set<Dependency> list = new LinkedHashSet<Dependency>();
+	final Deque<File> files = new ArrayDeque<File>();
+	final Set<Dependency> dependencies = new LinkedHashSet<Dependency>();
 
 	public FileSystemScanner(Properties ps) {
 		this.rootDir = new File(ps.getProperty("ivy.cache"));
@@ -41,12 +41,12 @@ public class FileSystemScanner implements Scanner {
 	public Set<Dependency> scan() {
 		long start = System.currentTimeMillis();
 		try {
-			if (!list.isEmpty()) {
-				list.clear();
-				deque.clear();
+			if (!dependencies.isEmpty()) {
+				dependencies.clear();
+				files.clear();
 			}
 			_scan();
-			return list;
+			return dependencies;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -57,9 +57,9 @@ public class FileSystemScanner implements Scanner {
 	}
 
 	private void _scan() throws ClientProtocolException, IOException {
-		deque.add(this.rootDir);
-		while (!deque.isEmpty()) {
-			_scan(deque.removeFirst());
+		files.add(this.rootDir);
+		while (!files.isEmpty()) {
+			_scan(files.removeFirst());
 		}
 	}
 
@@ -94,7 +94,7 @@ public class FileSystemScanner implements Scanner {
 	private void _handleDir(File dir) throws IOException,
 			ClientProtocolException, IllegalStateException {
 		for (File f : dir.listFiles()) {
-			deque.add(f);
+			files.add(f);
 		}
 	}
 
@@ -111,9 +111,7 @@ public class FileSystemScanner implements Scanner {
 		String name = segments.removeLast();
 		// everything else is the org
 		String org = getOrg(segments);
-		Dependency d = new Dependency(org, name, rev);
-		System.out.println(d);
-		list.add(d);
+		dependencies.add(new Dependency(org, name, rev));
 	}
 
 	private String getOrg(Deque<String> segments) {

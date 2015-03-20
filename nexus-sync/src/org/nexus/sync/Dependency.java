@@ -1,6 +1,6 @@
 package org.nexus.sync;
 
-public class Dependency {
+public class Dependency implements Comparable<Dependency> {
 
 	public final String org, name, rev;
 
@@ -51,6 +51,21 @@ public class Dependency {
 	public String toString() {
 		return "Dependency [org=" + org + ", name=" + name + ", rev=" + rev
 				+ "]";
+	}
+
+	@Override
+	public int compareTo(Dependency that) {
+		int n = this.org.compareTo(that.org);
+		if (n == 0) {
+			n = this.name.compareTo(that.name);
+			if (n == 0) {
+				return this.rev.compareTo(that.rev);
+			} else {
+				return n;
+			}
+		} else {
+			return n;
+		}
 	}
 
 }

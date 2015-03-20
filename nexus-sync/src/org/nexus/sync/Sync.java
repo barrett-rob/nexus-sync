@@ -14,9 +14,9 @@ public class Sync {
 		// load config
 		Properties ps = new Properties();
 		ps.load(new FileInputStream(new File("nexus-sync.properties")));
-		// scan 
+		// scan
 		Set<Dependency> dependencies = new FileSystemScanner(ps).scan();
-		// dependencies new HttpScanner(dependencies).scan();
+		dependencies = new HttpScanner(ps, dependencies).scan();
 		// resolve
 		new Resolver(dependencies).resolve();
 	}
