@@ -25,7 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class HtmlScanner implements Scanner {
+public class HttpScanner implements Scanner {
 
 	static final Set<String> EXCLUDE = new HashSet<String>(
 			Arrays.asList(new String[] { ".ear", ".jar", ".war", ".zip",
@@ -44,7 +44,7 @@ public class HtmlScanner implements Scanner {
 	final Set<Dependency> list = new LinkedHashSet<Dependency>();
 	final List<Pattern> repositories = new ArrayList<Pattern>();
 
-	public HtmlScanner(Properties ps) {
+	public HttpScanner(Properties ps) {
 		this.rootUrl = ps.getProperty("url");
 		System.out.println("scanning from root url: " + this.rootUrl);
 		for (Object o : ps.keySet()) {

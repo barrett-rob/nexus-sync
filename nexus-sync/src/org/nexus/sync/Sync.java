@@ -15,12 +15,8 @@ public class Sync {
 		Properties ps = new Properties();
 		ps.load(new FileInputStream(new File("nexus-sync.properties")));
 		// scan 
-		Set<Dependency> dependencies;
-		if (args.length > 0 && args[0].equals("full")) {
-			dependencies = new HtmlScanner(ps).scan();			
-		} else {
-			dependencies = new FileSystemScanner(ps).scan();
-		}
+		Set<Dependency> dependencies = new FileSystemScanner(ps).scan();
+		// dependencies new HttpScanner(dependencies).scan();
 		// resolve
 		new Resolver(dependencies).resolve();
 	}
