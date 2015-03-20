@@ -1,15 +1,14 @@
 package org.nexus.sync;
 
-import java.util.List;
+import java.util.Set;
 
 public class Resolver {
 
-	public Resolver(List<String> versions) {
-		// TODO Auto-generated constructor stub
+	public Resolver(Set<Dependency> dependencies) {
 	}
-	
+
 	public void resolve() {
-		
+
 	}
 
 }
