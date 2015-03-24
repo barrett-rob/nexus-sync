@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Sync {
 
@@ -21,7 +23,10 @@ public class Sync {
 		// reduce to latest versions
 		dependencies = new ReducingScanner(ps, dependencies).scan();
 		// resolve
-		new Resolver(dependencies).resolve();
+		for (Entry<Pattern, Set<Dependency>> e : new WorkloadSplitter(ps, dependencies)
+				.split().entrySet()) {
+			new Resolver(e.getKey(), e.getValue()).resolve();
+		}
 	}
 
 }

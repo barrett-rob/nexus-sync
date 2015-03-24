@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class ReducingScanner extends FilteringScanner {
+public class ReducingScanner extends VersionAware {
 
 	public ReducingScanner(Properties ps, Set<Dependency> ds) {
 		super(ps, ds);
@@ -51,6 +51,7 @@ public class ReducingScanner extends FilteringScanner {
 	private Dependency getLatest(List<Dependency> ds) {
 		Dependency latest = null;
 		for (Dependency d : ds) {
+			// TODO - replace this with proper ivy version comparison
 			if (latest == null || latest.rev.compareTo(d.rev) < 0) {
 				latest = d;
 			}
