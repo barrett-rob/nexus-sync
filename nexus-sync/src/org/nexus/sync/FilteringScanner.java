@@ -8,7 +8,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class FilteringScanner extends VersionAware implements Scanner {
+public class FilteringScanner extends GlobalState {
 
 	public FilteringScanner(Properties ps, Set<Dependency> ds) {
 		super(ps, ds);
@@ -17,7 +17,7 @@ public class FilteringScanner extends VersionAware implements Scanner {
 	public Set<Dependency> scan() {
 		List<Dependency> out = new ArrayList<Dependency>();
 		for (Dependency d : this.inputDependencies) {
-			for (Pattern p : this.versions) {
+			for (Pattern p : this.versionPatterns) {
 				if (p.matcher(d.rev).matches()) {
 					out.add(d);
 					continue;
@@ -26,7 +26,7 @@ public class FilteringScanner extends VersionAware implements Scanner {
 		}
 		Collections.sort(out);
 		System.out.println("after filtering for specific versions: "
-				+ out.size());
+				+ out.size() + " dependencies");
 		return new LinkedHashSet<Dependency>(out);
 	}
 }

@@ -4,20 +4,23 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.ivy.MyIvyResolver;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-public class Resolver {
+public class Resolver extends GlobalState {
 
 	final Pattern version;
 	final Set<Dependency> dependencies;
 
-	public Resolver(Pattern p, Set<Dependency> ds) {
+	public Resolver(Properties ps, Pattern p, Set<Dependency> ds) {
+		super(ps, null);
 		this.version = p;
 		this.dependencies = ds;
 		System.out.println("resolving [" + ds.size()
@@ -25,6 +28,11 @@ public class Resolver {
 	}
 
 	public void resolve() {
+		File ivyXml = createIvyXml();
+		executeIvyResolve(ivyXml);
+	}
+
+	private File createIvyXml() throws RuntimeException {
 		String v = this.version.toString().replace("\\", "").replace(".*", "");
 		Document d = new Document();
 		Element root = new Element("ivy-module");
@@ -50,6 +58,7 @@ public class Resolver {
 			os.flush();
 			os.close();
 			System.out.println("created " + f);
+			return f;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -61,9 +70,19 @@ public class Resolver {
 			Element e = new Element("dependency");
 			e.setAttribute("org", d.org);
 			e.setAttribute("name", d.name);
-			e.setAttribute("rev", d.rev);
+			e.setAttribute("rev", getVersionString(d.rev));
+			e.setAttribute("conf", "default");
 			dependenciesElement.addContent(e);
 		}
 		return dependenciesElement;
 	}
+
+	private void executeIvyResolve(File ivyXml) {
+		long start = System.currentTimeMillis();
+		new MyIvyResolver(ivyXml, ivySettingsFile, ivyCacheDir).resolve();
+		System.out.println("elapsed: ["
+				+ ((double) (System.currentTimeMillis() - start) / 60000)
+				+ "] min");
+	}
+
 }

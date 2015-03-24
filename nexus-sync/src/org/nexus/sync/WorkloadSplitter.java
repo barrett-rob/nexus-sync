@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class WorkloadSplitter extends VersionAware {
+public class WorkloadSplitter extends GlobalState {
 
 	public WorkloadSplitter(Properties ps, Set<Dependency> ds) {
 		super(ps, ds);
@@ -16,7 +16,7 @@ public class WorkloadSplitter extends VersionAware {
 	public Map<Pattern, Set<Dependency>> split() {
 		Map<Pattern, Set<Dependency>> m = new LinkedHashMap<Pattern, Set<Dependency>>();
 		for (Dependency d : this.inputDependencies) {
-			for (Pattern p : this.versions) {
+			for (Pattern p : this.versionPatterns) {
 				if (p.matcher(d.rev).matches()) {
 					Set<Dependency> byVersion = m.get(p);
 					if (byVersion == null) {

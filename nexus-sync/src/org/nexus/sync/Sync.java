@@ -25,7 +25,7 @@ public class Sync {
 		// resolve
 		for (Entry<Pattern, Set<Dependency>> e : new WorkloadSplitter(ps, dependencies)
 				.split().entrySet()) {
-			new Resolver(e.getKey(), e.getValue()).resolve();
+			new Resolver(ps, e.getKey(), e.getValue()).resolve();
 		}
 	}
 

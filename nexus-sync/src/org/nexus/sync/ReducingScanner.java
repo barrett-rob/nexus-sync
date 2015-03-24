@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class ReducingScanner extends VersionAware {
+public class ReducingScanner extends GlobalState {
 
 	public ReducingScanner(Properties ps, Set<Dependency> ds) {
 		super(ps, ds);
@@ -27,7 +27,7 @@ public class ReducingScanner extends VersionAware {
 						byVersion = new LinkedHashMap<Pattern, List<Dependency>>());
 			}
 			// store by version
-			for (Pattern p : this.versions) {
+			for (Pattern p : this.versionPatterns) {
 				if (p.matcher(d.rev).matches()) {
 					List<Dependency> ds = byVersion.get(p);
 					if (ds == null) {
@@ -44,7 +44,8 @@ public class ReducingScanner extends VersionAware {
 			}
 		}
 		Collections.sort(out);
-		System.out.println("after reducing to latest versions: " + out.size());
+		System.out.println("after reducing to latest versions: " + out.size()
+				+ " dependencies");
 		return new LinkedHashSet<Dependency>(out);
 	}
 

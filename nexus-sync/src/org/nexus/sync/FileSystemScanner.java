@@ -1,69 +1,52 @@
 package org.nexus.sync;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.ClientProtocolException;
+public class FileSystemScanner extends GlobalState {
 
-public class FileSystemScanner implements Scanner {
-
-	static final Set<String> EXCLUDE = new HashSet<String>(
-			Arrays.asList(new String[] { ".ear", ".jar", ".war", ".zip",
-					".md5", ".sha1", ".swc", ".exe", ".xml.original",
-					".DS_Store", "archetype-catalog.xml" }));
 	static final Pattern CHARSET_PATTERN = Pattern
 			.compile("^.*charset=(\\S*).*$");
 	static final Pattern IVY_XML_PATTERN = Pattern
 			.compile("^ivy-(\\S*)\\.xml$");
 
-	final File rootDir;
 	final Deque<File> files = new ArrayDeque<File>();
-	final Set<Dependency> dependencies = new LinkedHashSet<Dependency>();
 
 	public FileSystemScanner(Properties ps) {
-		this.rootDir = new File(ps.getProperty("ivy.cache"));
-		if (!this.rootDir.exists() || !this.rootDir.isDirectory()) {
-			throw new RuntimeException(this.rootDir
-					+ " does not exist or is not a directory");
-		}
-		System.out.println("scanning from root: " + this.rootDir);
+		super(ps, new LinkedHashSet<Dependency>());
 	}
 
 	public Set<Dependency> scan() {
 		try {
-			if (!dependencies.isEmpty()) {
-				dependencies.clear();
+			if (!inputDependencies.isEmpty()) {
+				inputDependencies.clear();
 				files.clear();
 			}
 			_scan();
-			return dependencies;
+			return inputDependencies;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void _scan() throws ClientProtocolException, IOException {
-		files.add(this.rootDir);
+	private void _scan() {
+		files.add(this.ivyCacheDir);
 		while (!files.isEmpty()) {
 			_scan(files.removeFirst());
 		}
 		System.out.println("after scanning filesystem: "
-				+ this.dependencies.size());
+				+ this.inputDependencies.size() + " dependencies");
 	}
 
-	private void _scan(File f) throws ClientProtocolException, IOException {
-		for (String exclude : EXCLUDE) {
-			if (f.getName().endsWith(exclude)) {
-				// ignore
+	private void _scan(File f) {
+		for (Pattern p : this.excludes) {
+			if (p.matcher(f.getName()).matches()) {
 				return;
 			}
 		}
@@ -88,8 +71,7 @@ public class FileSystemScanner implements Scanner {
 		return d;
 	}
 
-	private void _handleDir(File dir) throws IOException,
-			ClientProtocolException, IllegalStateException {
+	private void _handleDir(File dir) {
 		for (File f : dir.listFiles()) {
 			files.add(f);
 		}
@@ -98,7 +80,7 @@ public class FileSystemScanner implements Scanner {
 	private void _handleFullUrl(File f, Matcher ivyXmlMatcher) {
 		Deque<String> segments = getSegments(f);
 		// discard everything that's in root path
-		for (int i = 0; i < getSegments(this.rootDir).size(); i++) {
+		for (int i = 0; i < getSegments(this.ivyCacheDir).size(); i++) {
 			segments.removeFirst();
 		}
 		// discard file
@@ -108,7 +90,7 @@ public class FileSystemScanner implements Scanner {
 		String name = segments.removeLast();
 		// everything else is the org
 		String org = getOrg(segments);
-		dependencies.add(new Dependency(org, name, rev));
+		inputDependencies.add(new Dependency(org, name, rev));
 	}
 
 	private String getOrg(Deque<String> segments) {
