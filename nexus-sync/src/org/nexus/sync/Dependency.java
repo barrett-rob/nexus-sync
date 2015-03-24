@@ -49,7 +49,7 @@ public class Dependency implements Comparable<Dependency> {
 
 	@Override
 	public String toString() {
-		return "Dependency [org=" + org + ", name=" + name + ", rev=" + rev
+		return "Dependency [org=" + org + ",\tname=" + name + ",\trev=" + rev
 				+ "]";
 	}
 

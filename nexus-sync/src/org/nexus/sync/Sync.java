@@ -14,9 +14,12 @@ public class Sync {
 		// load config
 		Properties ps = new Properties();
 		ps.load(new FileInputStream(new File("nexus-sync.properties")));
-		// scan
+		// get base set of deps from filesystem
 		Set<Dependency> dependencies = new FileSystemScanner(ps).scan();
-		dependencies = new HttpScanner(ps, dependencies).scan();
+		// filter based on versions
+		dependencies = new FilteringScanner(ps, dependencies).scan();
+		// reduce to latest versions
+		dependencies = new ReducingScanner(ps, dependencies).scan();
 		// resolve
 		new Resolver(dependencies).resolve();
 	}

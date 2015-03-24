@@ -39,7 +39,6 @@ public class FileSystemScanner implements Scanner {
 	}
 
 	public Set<Dependency> scan() {
-		long start = System.currentTimeMillis();
 		try {
 			if (!dependencies.isEmpty()) {
 				dependencies.clear();
@@ -49,10 +48,6 @@ public class FileSystemScanner implements Scanner {
 			return dependencies;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} finally {
-			long elapsed = System.currentTimeMillis() - start;
-			System.out
-					.println("elapsed: [" + ((double) elapsed / 1000) + "] s");
 		}
 	}
 
@@ -61,6 +56,8 @@ public class FileSystemScanner implements Scanner {
 		while (!files.isEmpty()) {
 			_scan(files.removeFirst());
 		}
+		System.out.println("after scanning filesystem: "
+				+ this.dependencies.size());
 	}
 
 	private void _scan(File f) throws ClientProtocolException, IOException {
