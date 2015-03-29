@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -74,7 +76,16 @@ public class Resolver extends GlobalState {
 			e.setAttribute("conf", "default");
 			dependenciesElement.addContent(e);
 		}
+		dependenciesElement.addContent(constructExcludesElements());
 		return dependenciesElement;
+	}
+
+	private List<Element> constructExcludesElements() {
+		ArrayList<Element> elements = new ArrayList<Element>();
+		Element e = new Element("exclude");
+		e.setAttribute("module", "org.osgi.core");
+		elements.add(e);
+		return elements;
 	}
 
 	private void executeIvyResolve(File ivyXml) {
