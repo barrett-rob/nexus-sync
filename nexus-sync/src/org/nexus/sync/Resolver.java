@@ -82,10 +82,15 @@ public class Resolver extends GlobalState {
 
 	private List<Element> constructExcludesElements() {
 		ArrayList<Element> elements = new ArrayList<Element>();
-		Element e = new Element("exclude");
-		e.setAttribute("module", "org.osgi.core");
-		elements.add(e);
+		elements.add(createExcludesElement("org.osgi.core"));
+		elements.add(createExcludesElement("org.apache.velocity"));
 		return elements;
+	}
+
+	private Element createExcludesElement(String module) {
+		Element e = new Element("exclude");
+		e.setAttribute("module", module);
+		return e;
 	}
 
 	private void executeIvyResolve(File ivyXml) {

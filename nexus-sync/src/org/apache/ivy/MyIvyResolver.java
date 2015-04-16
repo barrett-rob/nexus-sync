@@ -24,7 +24,8 @@ public class MyIvyResolver {
 							"-cache", ivyCacheDir.getPath(), "-ivy",
 							ivyXml.getPath() });
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			System.err.println("*** resolve failed ***");
+			e.printStackTrace(System.err);
 		} finally {
 			System.getProperties().remove("ivy.default.resolver");
 		}
