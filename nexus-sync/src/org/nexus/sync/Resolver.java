@@ -83,7 +83,7 @@ public class Resolver extends GlobalState {
 	private List<Element> constructExcludesElements() {
 		ArrayList<Element> elements = new ArrayList<Element>();
 		elements.add(createExcludesElement("org.osgi.core"));
-		elements.add(createExcludesElement("org.apache.velocity"));
+		elements.add(createExcludesElement("velocity"));
 		return elements;
 	}
 
